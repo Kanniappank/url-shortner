@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UrlResponse {
+public class CreateUrlResponse {
     private Long id;
     private String originalUrl;
     private String shortCode;
