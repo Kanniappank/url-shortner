@@ -1,11 +1,12 @@
 package com.kanniappan.urlshortener.service;
 
-import com.kanniappan.urlshortener.dto.CreateUserRequest;
+import com.kanniappan.urlshortener.dto.UserRequest;
 import com.kanniappan.urlshortener.dto.UserResponse;
 import com.kanniappan.urlshortener.entity.User;
 import com.kanniappan.urlshortener.exception.UserAlreadyExistsException;
 import com.kanniappan.urlshortener.repository.UserRepository;
-import com.kanniappan.urlshortener.util.Role;
+import com.kanniappan.urlshortener.util.EmailUtils;
+import com.kanniappan.urlshortener.constants.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,14 @@ public class UserService {
 
 
     @Transactional
-    public UserResponse register(CreateUserRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exist");
+    public UserResponse register(UserRequest request) {
+        String email = EmailUtils.normalize(request.getEmail());
+        if (userRepository.existsByEmail(email)) {
+            throw new UserAlreadyExistsException("User with email " + email + " already exist");
         }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(email)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();

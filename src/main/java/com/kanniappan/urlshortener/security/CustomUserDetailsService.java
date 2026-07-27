@@ -1,4 +1,4 @@
-package com.kanniappan.urlshortener.service;
+package com.kanniappan.urlshortener.security;
 
 import com.kanniappan.urlshortener.entity.User;
 import com.kanniappan.urlshortener.repository.UserRepository;

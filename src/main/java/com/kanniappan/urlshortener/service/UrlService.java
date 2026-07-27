@@ -3,17 +3,23 @@ package com.kanniappan.urlshortener.service;
 import com.kanniappan.urlshortener.dto.CreateUrlRequest;
 import com.kanniappan.urlshortener.dto.CreateUrlResponse;
 import com.kanniappan.urlshortener.entity.Url;
+import com.kanniappan.urlshortener.entity.User;
 import com.kanniappan.urlshortener.exception.UrlExpiredException;
 import com.kanniappan.urlshortener.exception.UrlInactiveException;
 import com.kanniappan.urlshortener.exception.UrlNotFoundException;
 import com.kanniappan.urlshortener.repository.UrlRepository;
 import com.kanniappan.urlshortener.util.ShortCodeGenerator;
+import com.kanniappan.urlshortener.util.UrlUtil;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UrlService {
@@ -39,9 +45,23 @@ public class UrlService {
     @Transactional
     public CreateUrlResponse createShortUrl(CreateUrlRequest request) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = (User) authentication.getPrincipal();
+
+        String email = UrlUtil.normalize(request.getOriginalUrl());
+
+        Optional<Url> existingUrl = urlRepository.findByUserAndOriginalUrl(user, email);
+
+        if (existingUrl.isPresent()) {
+
+            return mapToResponse(existingUrl.get());
+
+        }
+
         String shortCode = generateUniqueShortCode();
 
-        Url url = buildUrlEntity(request, shortCode);
+        Url url = buildUrlEntity(request, shortCode, user);
 
         Url savedUrl = urlRepository.save(url);
 
@@ -57,12 +77,13 @@ public class UrlService {
         return shortCode;
     }
 
-    private Url buildUrlEntity(CreateUrlRequest request, String shortCode) {
+    private Url buildUrlEntity(CreateUrlRequest request, String shortCode, User user) {
         LocalDateTime now = LocalDateTime.now();
         return Url.builder()
-                .originalUrl(request.getOriginalUrl())
+                .originalUrl(UrlUtil.normalize(request.getOriginalUrl()))
                 .shortCode(shortCode)
                 .expiresAt(now.plusYears(1))
+                .user(user)
                 .build();
     }
 

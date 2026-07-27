@@ -2,6 +2,7 @@ package com.kanniappan.urlshortener.exception;
 
 import com.kanniappan.urlshortener.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,6 +58,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistException(UserAlreadyExistsException ex, HttpServletRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT.value())
-                .body(buildErrorResponse(HttpStatus.CONFLICT,ex.getMessage(),request));
+                .body(buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), request));
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), request));
     }
 }

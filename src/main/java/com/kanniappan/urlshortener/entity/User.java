@@ -1,6 +1,6 @@
 package com.kanniappan.urlshortener.entity;
 
-import com.kanniappan.urlshortener.util.Role;
+import com.kanniappan.urlshortener.constants.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class User extends BaseEntity implements UserDetails {
 
     @Id
