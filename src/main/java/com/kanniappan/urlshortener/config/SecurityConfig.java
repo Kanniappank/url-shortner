@@ -1,6 +1,7 @@
 package com.kanniappan.urlshortener.config;
 
 import com.kanniappan.urlshortener.security.JwtAuthenticationFilter;
+import com.kanniappan.urlshortener.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,14 +17,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.time.Duration;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -37,7 +42,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/{shortCode}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/urls").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/urls/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/urls").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/urls/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/urls/**").authenticated()
                         .anyRequest().denyAll()
                 );
         return http.build();

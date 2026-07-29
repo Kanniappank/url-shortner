@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.Getter;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.LongAccumulator;
 
 
 @MappedSuperclass
+@Getter
 public abstract class BaseEntity {
 
     @Column(name = "created_at", nullable = false)

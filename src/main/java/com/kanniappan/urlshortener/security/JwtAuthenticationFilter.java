@@ -64,7 +64,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("Authentication stored in SecurityContext");
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }
